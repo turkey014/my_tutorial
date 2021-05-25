@@ -1,0 +1,343 @@
+git githubの基本操作や備忘録
+
+2021-02 に作成
+
+環境
+Windows10
+git version 2.29.0.windows.1
+
+repository を作る
+
+githubにログイン
+左上のgithubアイコンをクリック
+
+githubアイコンのすぐ下にあるRepositoriesの
+左の緑色のボタン「New」をクリック
+
+OwnerとRepository nameを設定する
+（Ownerはデフォルトで自分になっているので多くの場合は
+そのままでOK）
+
+Description(optional)に説明を記入できるがしなくてもOK
+
+PublicかPrivateを選択
+（Publicは全世界に公開）
+（Privateは公開する人を設定できる）
+
+その他のオプションは随時わかったら追記するかも
+
+最低限の設定がすんだら「Create repository」をクリック
+
+repository の作成完了
+
+
+
+githubに公開鍵を登録する
+
+
+cmdを開く
+
+
+以下のコマンドを実行してsshKeyを発行する
+
+ssh-keygen -t rsa -C [githubに登録したメアド]
+
+
+作成するディレクトリとファイル名を聞かれる。
+~/.ssh/id_rsa
+となっていることを確認してEnter
+
+パスフレーズを設定するか聞かれるので必要に応じて設定する。
+必要なければ何も入力せずにEnterでOK
+
+確認のため、もう一度パスフレーズを聞かれるので、
+先ほど入力したものと同じパスフレーズを入力する。
+設定しない場合は何も入力せずにEnter 
+
+
+~/.ssh 以下のファイルを確認する(コマンドを実行)
+
+ls ~/.ssh
+
+id_rsa と id_rsa.pub があることを確認できればOK
+
+
+~/.ssh に移動する（コマンド）
+
+cd ~/.ssh
+
+
+id_rsa.pub の中身を確認する（コマンド）
+
+type id_rsa.pub
+
+中身が表示されるので、ssh-rsa HOGEHOGE.... をコピー
+（最後のメールアドレスはコピーしない）
+
+
+github ページの右上にある自分のアイコンをクリック。
+
+Settings をクリック
+
+ページ左側にある SSH and GPG keys をクリック
+
+SSH keys　とある右の　「New SSH key」 をクリック
+
+Title を設定する
+
+
+Key に先ほどコピーした ssh-rsa HOGEHOGE.....を貼り付ける
+
+
+「Add SSH key」をクリックして公開鍵の登録完了
+
+登録できるとSSH and GPG keys の SSH keysのところに
+鍵のタイトルや作成日、「Delete」などが鍵のアイコンとともに
+表示されるようになる。何もない場合は何か失敗しているかも
+
+
+
+
+git をつかう
+
+
+
+ローカルの任意の場所にディレクトリを作成する
+
+テキストエディタ（今回はvscode）で作成したディレクトリを開く
+
+ターミナルを表示し、ディレクトリに移動していることを確認して
+コマンドを実行
+
+git init
+
+.git という隠しファイルが作成されてgitで管理できるようになる
+
+
+誰がファイルを管理するかを設定する（コマンド）
+
+git config user.email "[githubに登録したメアドなど]"
+git config user.name "[githubに登録したアカウント名など]"
+
+
+indexにファイルを登録する（コマンド）
+
+git add .
+
+
+登録されているファイルを確認する（コマンド）
+
+git status
+
+緑色の文字のファイルが登録されている
+登録されていないと赤文字
+
+
+変更した内容を保存する（コマンド）
+
+git commit -m "コメントを入力"
+
+""で囲ったなかにどんな変更を加えたのかコメントをする
+コメントは英語か日本語か現場による
+一つの変更につき、なぜ変更したか、どこを変更したかなどを
+コメントしてcommitするとよい
+
+git commit だけだとindexに登録されていないので
+git add . で再び登録する
+
+
+
+変更したログを確認する（コマンド）
+
+git log
+
+終了する場合はキーボードの Q キーを押す
+
+
+
+過去のcommitに戻る（コマンド）
+
+git checkout HEAD^
+
+^を重ねることで（HEAD^^^）　^ の数だけ前のcommitに戻れる
+
+
+
+新しいbranch(分岐)を作る
+
+git checkout -b [branch名]
+
+
+現在のbranchを確認する
+
+git branch
+
+* がついているものが現在編集しているbranch
+
+
+branchを切り替える
+
+git checkout [branch名]
+
+
+
+
+branchを別のbranchに反映する（merge）
+
+変更したbranchから
+変更を反映させたいbranchに切り替える
+
+git branch [反映させたいbranch]
+
+反映させる
+
+git merge [変更したbranch] 
+
+
+反映完了！
+
+
+
+
+remote repository にファイルをアップロードする
+
+
+コマンドを実行
+
+git commit -m "first commit"
+
+
+↓ master のbranchをmainにする？
+
+git branch -M main
+
+
+
+今使用しているrepositoryとremoteを関連付ける
+
+git remote add origin git@github.com:ryt138/my_git_tutorial.git
+
+
+remoteのoriginにmainをアップロードする
+git push -u origin main
+
+
+remote repository をローカルにコピーする
+
+repositoryを新規作成した場合、
+github ページの作成したrepositoryのページから
+「Quick setup — if you’ve done this kind of thing before」
+の下にある「Set up in Desktop or HTTP SSH」
+となっているところの「SSH」をクリックし、
+その右にある「git@github.com......」をコピー
+
+すでにあるrepositoryをcloneする場合、
+作成したrepositoryのページからコードタブへ移動
+緑色の「Code▼」をクリック
+SSHを選択して「git@....」の文字列をコピー
+
+作業したい場所でコマンドを実行
+
+
+git clone [コピーしたgit@github.com...]
+
+元々、remote repositoryに関連付けたディレクトリに
+cloneするとよくわからないことになる。わかったら追記するかも
+
+
+remote repository にbranchをつくる
+
+localで新しくbranchを作る
+git checkout -b [追加するbranch]
+
+addしてcommit
+git add . 
+git commit -m "hogehogehoge"
+
+
+remote repository にpushする
+
+git push origin [追加するbranch]
+
+
+originは元々あるremote repositoryで
+git remote
+で今あるremote repositoryを確認できる
+
+
+github のページを更新するとbranchが
+追加されていることがわかる
+
+「branches」をクリックすると新たに追加された
+branch を確認できる
+
+
+pull request をする
+
+branch 追加後にgithubのrepository のページを更新すると
+黄色の網掛けで新しくbranchを追加したことを教えてくれる
+
+網掛け右側の緑色ボタン「Compare & pull request」を
+クリックすると「Open a pull request」のページに移動する
+
+「Write」タブにどういった変更を加えたのかなどのコメントを
+記入する
+
+ページ上部でどのbranchに対してマージのリクエストを
+送るのかよく確認する
+
+OKだったら、「Create pull request」をクリック
+
+ページが切り替わる（repositoryページのPull requestsタブ）
+
+先ほどのCreate pull requestで記入したコメントが表示され、
+その下のcommitしたときのコメントorCreate pull requestの
+時に設定したタイトルをクリックすると、どこを追加したのかが
+わかる。（Pull requestsタブのなかのCommitsタブでも見れる）
+
+緑の網掛けで + がついているところが追加した部分
+削除したところは赤くなる
++ をクリックするとその部分に対してコメントできる
+
+誰かと開発する場合はここでレビューをもらったりする
+
+レビューが終わったらCommitsタブにあるFinish your reviewを
+クリック。レビューするコメントがあれば入力し、
+Submit review をクリックしてレビュー終了。
+
+レビューが終わってOKだったら、Conversationタブの
+Merge pull request をクリック
+問題がなければそのままConfirm merge をクリック
+
+mergeが無事完了したら変更したbranchはいらなくなるので
+Delete branch をクリックしてbranchを削除する
+
+local のほうのblanchは残るっぽい。
+削除方法は気が向いたら追記。
+
+
+conflict が発生した場合、
+余計なことはせずに、githubページにあるcommand line ~
+みたいなやつに従えば解消できると思うが、できない場合は
+ググろう。　git rebase とかそのへんが使えるっぽい
+
+今回、test_branchをmerge pull request してmergeした後に
+再度test_branchに変更を加えてoriginにpushしたら、
+conflictが発生した。
+
+githubの指示に従ってStep1を実行したがうまくいかなかったので
+git fetch 
+ファイルを編集？　ここかrebaseのあとでやった。覚えてない。
+git rebase origin/main
+git add . 
+git commit -m "" 
+git rebase --continue
+git merge --no-ff test_branch
+git push origin main
+
+以上で解決できた。同じようなことが起きた時の参考になれば。
+
+
+
+
+
